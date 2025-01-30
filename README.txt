@@ -1,3 +1,5 @@
+The dynamic modeling work in this repository is part of a Nuclear Energy University Program (NEUP) project funded by the U.S. DOE. The objective of the project is to explore the application of advanced reactors within an Integrated Energy System (IES). In this context, an IES is the coupling of nuclear power to various heat intensive applications (e.g., electricity generation and hydrogen production).
+
 ~~~~ File and Folder Directory Descriptions ~~~~
 "individualModels(BETA)"
 - Explanation: The three systems (MCFR, HyS, and RBOP) as their own individual models. 
