@@ -24,4 +24,5 @@ OpenModelica Connection Editor to run or similar.
 "Dynamic Modeling of a Fast Spectrum Molten Salt Reactor Integrated Energy System" journal article by N. Dunkle et Al (2025)
 "Expanded Accident Scenarios and Frequency Characteristics for a Fast Spectrum Molten Salt Reactor in an Integrated Energy System" journal article by N. Dunkle et Al (2025)
 "Safety and Safeguards for Molten Salt Reactors in Integrated Energy Systems" dissertation by N. Dunkle (2025)
+"A reduced order sulfuric acid decomposition model for a nuclear-powered hybrid sulfur cycle" journal article by CT Callaway (2024)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
