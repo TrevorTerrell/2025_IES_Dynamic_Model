@@ -19,7 +19,7 @@ package MCFR_HyS_BOP
       Placement(visible = true, transformation(origin = {-1181, -471}, extent = {{-463, -463}, {463, 463}}, rotation = 0)));
     MCFR_HyS_BOP.Nuclear.Poisons Poisons(lam_bubble = 0.005) annotation(
       Placement(visible = true, transformation(origin = {-1265, -1015}, extent = {{-555, -555}, {555, 555}}, rotation = 0)));
-    MCFR_HyS_BOP.Nuclear.ReactivityFeedback ReactivityFeedback(a_F = -4.4376e-05, a_R = 0.1164e-05, step_mag = -185*1e-5, omega = 0.1, sin_mag = 1*1e-5, ramp_rate = -1e-5, ramp_low = 0.4, stepInsertionTime = 500000000, sinInsertionTime = 88888888, rampInsertionTime = 500000000) annotation(
+    MCFR_HyS_BOP.Nuclear.ReactivityFeedback ReactivityFeedback(a_F = -4.4376e-05, a_R = 0.1164e-05, step_mag = -185*1e-5, omega = 0.1, sin_mag = 1*1e-5, ramp_rate = 11e-5, ramp_mag = 600e-5, stepInsertionTime = 500000000, sinInsertionTime = 88888888, rampInsertionTime = 500000000) annotation(
       Placement(visible = true, transformation(origin = {-519, -1063}, extent = {{545, -545}, {-545, 545}}, rotation = 0)));
     MCFR_HyS_BOP.Pumps.PrimaryLoopPump PLP(freeConvectionFF = 0.125, primaryPumpK = 0.092, tripPrimaryPump = 5000000) annotation(
       Placement(visible = true, transformation(origin = {364, 566}, extent = {{-262, -262}, {262, 262}}, rotation = 0)));
@@ -107,7 +107,7 @@ package MCFR_HyS_BOP
       parameter MCFR_HyS_BOP.Units.PrecursorDecayConstant lam[6];
       parameter MCFR_HyS_BOP.Units.DelayedNeutronFrac beta[6];
       parameter MCFR_HyS_BOP.Units.ResidentTime tauCoreNom = 7.028; // Avg travel time within core
-      parameter MCFR_HyS_BOP.Units.ResidentTime tauLoopNom = 7.028; // Avg travel time from core outlet to inlet
+      parameter MCFR_HyS_BOP.Units.ResidentTime tauLoopNom = 7.028;       // Avg travel time from core outlet to inlet
       //Variable declaration
       MCFR_HyS_BOP.Units.ResidentTime varTauCore;
       MCFR_HyS_BOP.Units.ResidentTime varTauLoop;
@@ -223,7 +223,7 @@ package MCFR_HyS_BOP
       parameter MCFR_HyS_BOP.Units.MacroAbsorptionCrossSection Sig_f = 0.00129788; // Fission cross section of fuel
       parameter MCFR_HyS_BOP.Units.MacroAbsorptionCrossSection Sig_a = 0.00302062; // Absorption cross section of fuel
       parameter MCFR_HyS_BOP.Units.NominalNeutronFlux phi_0 = 3.51513E+14; // Flux density in core
-      parameter MCFR_HyS_BOP.Units.OffgasRemovalRate lam_bubble; // Removal rate of fission gases via bubble removal. See Dunkle_2023 "Effect of xenon removal rate on load following in high power thermal spectrum Molten-Salt Reactors (MSRs)" for more info.
+      parameter MCFR_HyS_BOP.Units.OffgasRemovalRate lam_bubble;       // Removal rate of fission gases via bubble removal. See Dunkle_2023 "Effect of xenon removal rate on load following in high power thermal spectrum Molten-Salt Reactors (MSRs)" for more info.
       //Variable declarations
       MCFR_HyS_BOP.Units.IsotopicConc I135_conc;
       MCFR_HyS_BOP.Units.IsotopicConc Xe135_conc;
@@ -267,12 +267,12 @@ package MCFR_HyS_BOP
       parameter MCFR_HyS_BOP.Units.Reactivity step_mag;
       parameter MCFR_HyS_BOP.Units.Frequency omega;
       parameter MCFR_HyS_BOP.Units.Reactivity sin_mag;
-      parameter MCFR_HyS_BOP.Units.Reactivity ramp_rate;
+      parameter MCFR_HyS_BOP.Units.ReactivityRate ramp_rate;
+      parameter MCFR_HyS_BOP.Units.Reactivity ramp_mag;
       parameter MCFR_HyS_BOP.Units.Reactivity dollar = 0.007407352; // Unused in current version. Can be used for reactivity in cents
       parameter MCFR_HyS_BOP.Units.InitiationTime stepInsertionTime;
       parameter MCFR_HyS_BOP.Units.InitiationTime sinInsertionTime;
       parameter MCFR_HyS_BOP.Units.InitiationTime rampInsertionTime;
-      parameter MCFR_HyS_BOP.Units.Number ramp_low;
       MCFR_HyS_BOP.Units.Reactivity FuelTempFeedbackNode1;
       MCFR_HyS_BOP.Units.Reactivity FuelTempFeedbackNode2;
       MCFR_HyS_BOP.Units.Reactivity ReflcTempFeedback;
@@ -301,7 +301,7 @@ package MCFR_HyS_BOP
     equation
       ReactExternalStep = 0 + (if time < stepInsertionTime then 0 else step_mag); // For step insertion
       ReactExternalSin = delay(sin_mag*sin(omega*time), sinInsertionTime); // For sinusoid insertion
-      ReactExternalRamp = 0 + (if (time < rampInsertionTime) then 0 else if (time < rampInsertionTime + 54.55) then (600*1e-5)*(time - rampInsertionTime)/54.55 else if (time < rampInsertionTime + 1050000) then (600*1e-5) else if (time < rampInsertionTime + 1100000) then (600*1e-5)*(rampInsertionTime + 1150000 - time)/54.55 else 0); // For ramp insertion. NOTE: The numbers will need to be changed to redesign the ramp. Would be improved by turning these into parameters.
+      ReactExternalRamp = 0 + (if (time < rampInsertionTime) then 0 else if (time > rampInsertionTime + ramp_mag / ramp_rate) then ramp_mag else ramp_rate * (time - rampInsertionTime)); //For ramp insertion
       FuelTempFeedbackNode1 = (fuelNode1.T - FuelTempSetPointNode1)*(a_F/2); 
       FuelTempFeedbackNode2 = (fuelNode2.T - FuelTempSetPointNode2)*(a_F/2);
       ReflcTempFeedback = (ReflcNode.T - ReflcTempSetPoint)*a_R;
@@ -414,11 +414,11 @@ package MCFR_HyS_BOP
       // Secondary Side node 4 mass
       parameter MCFR_HyS_BOP.Units.Mass m_pipe = 31915;
       // Mass of fluid in pipe between PHX to Core. Necessary due to decay heat present even in transport
-      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_pFluid_PHX = 0.00066065; // From Terrapower documents
+      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_pFluid_PHX = 0.00066065;       // From Terrapower documents
       // Fuel salt specific heat [MJ/(kg*C)]
-      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_Tube_PHX = 0.00057779; // specific heat capacity of tubes (MJ/(kg-C)) ORNL-TM-0728 p.20
+      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_Tube_PHX = 0.00057779;       // specific heat capacity of tubes (MJ/(kg-C)) ORNL-TM-0728 p.20
       // PHX Tubing specific heat [MJ/(kg*C)]
-      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_sFluid_PHX = 0.0011; // Secondary salt. See Dunkle_2025 "Dynamic Modeling of a Fast Spectrum Molten Salt Reactor Integrated Energy System" Table 1
+      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_sFluid_PHX = 0.0011;       // Secondary salt. See Dunkle_2025 "Dynamic Modeling of a Fast Spectrum Molten Salt Reactor Integrated Energy System" Table 1
       // Coolant salt specific heat [MJ/(kg*C)]
       parameter MCFR_HyS_BOP.Units.MassFlowRate m_dot_pFluidNom_PHX;
       // Fuel salt nominal flow rate
@@ -428,9 +428,9 @@ package MCFR_HyS_BOP
       // PHX primary side heat transfer coefficient [MJ/(s*C)]
       parameter MCFR_HyS_BOP.Units.Convection hAsnNom_PHX;
       // PHX secondary side heat transfer coefficient [MJ/(s*C)]
-      parameter MCFR_HyS_BOP.Units.ResidentTime tauPHXtoCore = 1;      //0.6887;
+      parameter MCFR_HyS_BOP.Units.ResidentTime tauPHXtoCore = 1;            //0.6887;
       // Avg travel time from PHX to pipe
-      parameter MCFR_HyS_BOP.Units.ResidentTime tauPHXtoSHX = 10;            //2.5;
+      parameter MCFR_HyS_BOP.Units.ResidentTime tauPHXtoSHX = 10;                  //2.5;
       // Avg travel time from PHX to SHX
       //parameter MCFR_HyS_BOP.Units.ResidentTime tauPipeToCore = 0.6887;
       parameter MCFR_HyS_BOP.Units.Temperature T_PN1_PHX_initial = 708.6;
@@ -534,7 +534,7 @@ package MCFR_HyS_BOP
       // SHX Tubing node 1 mass
       parameter MCFR_HyS_BOP.Units.Mass m_TN2_SHX = 4268;
       // SHX Tubing node 2 mass
-      parameter MCFR_HyS_BOP.Units.Mass m_SN1_SHX = 20460;      //20460;
+      parameter MCFR_HyS_BOP.Units.Mass m_SN1_SHX = 20460;            //20460;
       // Cold Side (Hitec salt from OTSG) node 1 mass
       parameter MCFR_HyS_BOP.Units.Mass m_SN2_SHX = 20460;
       // Cold Side (Hitec salt from OTSG) node 2 mass
@@ -542,11 +542,11 @@ package MCFR_HyS_BOP
       // Cold Side (Hitec salt from OTSG) node 3 mass
       parameter MCFR_HyS_BOP.Units.Mass m_SN4_SHX = 20460;
       // Cold Side (Hitec salt from OTSG) node 4 mass
-      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_pFluid_SHX = 0.0011; // See IES paper Table 1 for details
+      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_pFluid_SHX = 0.0011;       // See IES paper Table 1 for details
       // Fuel salt specific heat [MJ/(kg*C)]
       parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_Tube_SHX = 0.00057779;
       // PHX Tubing specific heat [MJ/(kg*C)]
-      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_sFluid_SHX = 0.00154912; // Hitec salt specific heat capacity
+      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_sFluid_SHX = 0.00154912;       // Hitec salt specific heat capacity
       // Coolant salt specific heat [MJ/(kg*C)]
       parameter MCFR_HyS_BOP.Units.MassFlowRate m_dot_pFluidNom_SHX;
       // Fuel salt nominal flow rate
@@ -556,9 +556,9 @@ package MCFR_HyS_BOP
       // PHX primary side heat transfer coefficient [MJ/(s*C)]
       parameter MCFR_HyS_BOP.Units.Convection hAsnNom_SHX;
       // PHX secondary side heat transfer coefficient [MJ/(s*C)]
-      parameter MCFR_HyS_BOP.Units.ResidentTime tauSHXtoPHX = 10;      //2.5
+      parameter MCFR_HyS_BOP.Units.ResidentTime tauSHXtoPHX = 10;            //2.5
       // Avg travel time from SHX to PHX
-      parameter MCFR_HyS_BOP.Units.ResidentTime tauSHXtoOTSG = 10;      //2.5
+      parameter MCFR_HyS_BOP.Units.ResidentTime tauSHXtoOTSG = 10;            //2.5
       // Avg travel time from SHX to OTSG
       parameter MCFR_HyS_BOP.Units.Temperature T_PN1_SHX_initial = 679.6;
       parameter MCFR_HyS_BOP.Units.Temperature T_PN2_SHX_initial = 670.4;
@@ -704,7 +704,7 @@ package MCFR_HyS_BOP
       parameter MCFR_HyS_BOP.Units.CompressibilityFactor Z_ss = 0.76634; // Compressibility factor at 570K and 60 atm
       parameter MCFR_HyS_BOP.Units.UniversalGasConstant R_ugc = 8.3114462e-6; // Universal gas constant [MJ/(mol*C)]
       parameter MCFR_HyS_BOP.Units.MolarMass MM_stm = 0.018; // Molar mass of steam
-      parameter MCFR_HyS_BOP.Units.Pressure P_setpoint = 12.5; // Nominal secondary side pressure [MPa]
+      parameter MCFR_HyS_BOP.Units.Pressure P_setpoint = 12.5;       // Nominal secondary side pressure [MPa]
       // Variable declaration
       MCFR_HyS_BOP.Units.ResidentTime varTauOTSGtoSHX;
       MCFR_HyS_BOP.Units.MassFlowRate m_dot_hitec;
@@ -798,9 +798,9 @@ package MCFR_HyS_BOP
 // Secondary side pressure:
       der(P_stm.P)*A_flow*L_sh = ((Z_ss*R_ugc)*(der(M_sh)*(T_SH1.T + T_SH2) + M_sh*(der(T_SH1.T) + der(T_SH2)))/(2*MM_stm)) - (P_stm.P*A_flow*der(L_sh)); // Secondary side pressure. T_sh1 is OTSG outlet. Assumption: P_subcooled = P_saturatedboiling = P_superheated
 //der(P_stm.P)*A_flow*L_sh = ((Z_ss*R_ugc)*(der(M_sh)*(T_SH2) + M_sh*(der(T_SH2)))/(MM_stm)) - (P_stm.P*A_flow*der(L_sh)); //Alternative method
- //P_stm.P = 12.5; // Default pressure. Uncomment this and comment the der(P_stm.P) eqn to set pressure constant.
+//P_stm.P = 12.5; // Default pressure. Uncomment this and comment the der(P_stm.P) eqn to set pressure constant.
 //  der(P_stm) = 0; //Alternative
-    //=======
+//=======
 // Density, length, and mass flow rates:
       rho_b = 25.884875705 + 12.835*P_stm.P; // Two-phase boiling density eqn. See Singh_2020 (https://www.sciencedirect.com/science/article/pii/S0029549319304881)
       der(L_sc) = (1/(A_flow * 0.5 * rho_SC * cP_SC * (T_SC2 - T_sat))) * (h_wsc * N_tubes * pi * D_outer * L_sc * 0.5 * (T_TN5 - T_sat) + cP_SC * (m_dot_fdw.mdot * T_SC2 - (m_dot_fdw.mdot + m_dot_SC) * 0.5 * T_sat) + A_flow * L_sc * 0.5 * (K_sc * cP_SC * (T_SC2 - 2 * T_sat) - 1) * der(P_stm.P) - (A_flow * rho_SC * cP_SC * K_1 * L_sc * 0.5 * der(P_stm.P))); // Subcooled domain length eqn
@@ -810,8 +810,8 @@ package MCFR_HyS_BOP
       m_dot_SH.mdot = m_dot_fdw.mdot * P_stm.P / P_setpoint; // Flow rate out of superheated domain (and OTSG)
       m_dot_SC = m_dot_fdw.mdot - (rho_SC*A_flow*der(L_sc)) - (A_flow*L_sc*K_sc*der(P_stm.P)); // Flow rate out of subcooled domain
       m_dot_B = (h_wb*(N_tubes*pi*D_outer*L_b)*(T_TN3*0.5 + T_TN4*0.5 - T_sat))/(X_4 + K_4*P_stm.P); // Flow rate out of boiling domain
-    //  m_dot_SC = 1.925004320027648e+02;
-    //  m_dot_B = 1.925004320027648e+02;
+//  m_dot_SC = 1.925004320027648e+02;
+//  m_dot_B = 1.925004320027648e+02;
       der(M_sh) = m_dot_B - m_dot_SH.mdot; // Rate of steam mass change
       P_OTSG_Primary = m_dot_hitec*cP_hitec*(T_in_hitec_OTSG.T - T_PN6);
     annotation(
@@ -981,7 +981,7 @@ package MCFR_HyS_BOP
         H_vRH = Water.specificEnthalpy_pT(P_HP.P*1e6, T_OTSG.T + 273.15)/1e6 - Q_RH/m_dot_vRH;
         T_vRH = Water.temperature_ph(P_HP.P*1e6, H_vRH*1e6) - 273.15;
     end if;
-    //Explanation: The limits of the reheater are that the reheated outlet can be heated nearly to the temp of the valve side inlet, or the valve side outlet can be cooled nearly down to the temp of the regeated side inlet. The reheated side cannot be heated beyond the valve side max temp nor can the valve side transfer heat when below the secondary side's minimum temp due to Newton's law of cooling.
+//Explanation: The limits of the reheater are that the reheated outlet can be heated nearly to the temp of the valve side inlet, or the valve side outlet can be cooled nearly down to the temp of the regeated side inlet. The reheated side cannot be heated beyond the valve side max temp nor can the valve side transfer heat when below the secondary side's minimum temp due to Newton's law of cooling.
 //======================
 //LOW PRESSURE TURBINE EQNS:
        m_dot_LPT_in = m_dot_RH;
@@ -1088,7 +1088,7 @@ package MCFR_HyS_BOP
       parameter MCFR_HyS_BOP.Units.Volt E0_cell = 0.6;// From Gorensek
       parameter MCFR_HyS_BOP.Units.WeightPercent WtP_SA_nom = 0.9;
       parameter MCFR_HyS_BOP.Units.MolFlowRate Mdot_H2O_nom;//Nominal excess water flow rate
-      parameter MCFR_HyS_BOP.Units.MolFlowRate Mdot_SA_nom;    //Nominal net sulfur flow rate
+      parameter MCFR_HyS_BOP.Units.MolFlowRate Mdot_SA_nom;          //Nominal net sulfur flow rate
       // ~~~
       parameter MCFR_HyS_BOP.Units.Time rampstart;
       parameter MCFR_HyS_BOP.Units.Number ramp_min;
@@ -1470,6 +1470,8 @@ end HyS;
     type Conversion = Real(unit = "1", min = 0, max = 1);
     type StandardEntropy = Real(unit = "MJ/(mol*K)");
     type EnthalpyOfReaction = Real(unit = "MJ/mol");
+
+    type ReactivityRate = Real(unit = "1/s");
     
     
   end Units;
@@ -1567,12 +1569,12 @@ end HyS;
 
   model notes
   equation
-  // ===== Misc =====
-  // Errors/warnings at the start of a simulation are due to variables settling into steady state after initialization. Transients should thus begin a few thousand seconds in.
-  // Hard crashes of the model are often due to the OTSG. As is, the model cannot handle when the superheated steam domain length goes to zero. That happens when the temperatures in the OTSG go too low for too long. Improvement of the OTSG in this regard means that saturated steam is allowed through. Adjustments would possibly be needed in the RBOP too.
+// ===== Misc =====
+// Errors/warnings at the start of a simulation are due to variables settling into steady state after initialization. Transients should thus begin a few thousand seconds in.
+// Hard crashes of the model are often due to the OTSG. As is, the model cannot handle when the superheated steam domain length goes to zero. That happens when the temperatures in the OTSG go too low for too long. Improvement of the OTSG in this regard means that saturated steam is allowed through. Adjustments would possibly be needed in the RBOP too.
 // ===== Organization =====
-  //// The "Simbase" class is what connects all the modules/components together. It has the values for the parameters that are most important and/or most likely to be changed to simulate different transients.
-  //// The "Nuclear" package has the modules necessary to model the reactor and give it improved capabilities/features. These include modified point kinetics (mPKE) for tracking neutron population, DecayHeat for tracking decay heat via precursor groups (similar to delayed neutrons), Poisons for tracking poison and poison parent concentrations, and ReactivityFeedback for determining all feedbacks and producing a net reactivity value for mPKE.
+//// The "Simbase" class is what connects all the modules/components together. It has the values for the parameters that are most important and/or most likely to be changed to simulate different transients.
+//// The "Nuclear" package has the modules necessary to model the reactor and give it improved capabilities/features. These include modified point kinetics (mPKE) for tracking neutron population, DecayHeat for tracking decay heat via precursor groups (similar to delayed neutrons), Poisons for tracking poison and poison parent concentrations, and ReactivityFeedback for determining all feedbacks and producing a net reactivity value for mPKE.
 //// The "HeatTransport" package has all the components of the IES. These include the MCFR Core, the eight primary heat exchangers (which are combined as one component), the secondary heat exchanger (also called the Thermal Manifold), the Once-Through Steam Generator (OTSG), Rankine Balance of Plant (RBOP), and hybrid sulfur cycle (HyS). The RBOP and HyS are not purely heat exchangers, have interdepencies with their components, and thus are grouped into their own model class script in this organization. The 'Water' and 'MoistAir' packages are necessary for the RBOP to function. The Ultimate Heat Exchanger (UHX) is a simple heat removal component that is not used by default but was used for debugging.
 //// The "Pumps" package has the modules for each of the main salt loops (primary, secondary, and tertiary). These are simple and only determine the flow fraction when the pump is tripped. By default, they output the flow fraction as 1.
 //// The "Units" package lists and defines each of the units used throughout the model.
