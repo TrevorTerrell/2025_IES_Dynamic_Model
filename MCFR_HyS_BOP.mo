@@ -500,17 +500,18 @@ package MCFR_HyS_BOP
 // These next two are optional and not currently used. They attempt to include some complexity of htc changing due to flow rate turbulence
 //hApn_PHX = hApnNom_PHX*(0.8215*primaryFF.FF^6 - 4.108*primaryFF.FF^5 + 7.848*primaryFF.FF^4 - 7.165*primaryFF.FF^3 + 3.004*primaryFF.FF^2 + 0.5903*primaryFF.FF + 0.008537);
 //hAsn_PHX = hAsnNom_PHX*(0.8215*secondaryFF.FF^6 - 4.108*secondaryFF.FF^5 + 7.848*secondaryFF.FF^4 - 7.165*secondaryFF.FF^3 + 3.004*secondaryFF.FF^2 + 0.5903*secondaryFF.FF + 0.008537);
-      m_PN1_PHX*cP_pFluid_PHX*der(T_PN1_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_in_pFluid_PHX.T - T_PN1_PHX) - hApn_PHX*(T_PN1_PHX - T_TN1_PHX) + P_decay.Q*m_PN1_PHX;
-      m_PN2_PHX*cP_pFluid_PHX*der(T_PN2_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_PN1_PHX - T_PN2_PHX) - hApn_PHX*(T_PN1_PHX - T_TN1_PHX) + P_decay.Q*m_PN2_PHX;
-      m_PN3_PHX*cP_pFluid_PHX*der(T_PN3_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_PN2_PHX - T_PN3_PHX) - hApn_PHX*(T_PN3_PHX - T_TN2_PHX) + P_decay.Q*m_PN3_PHX;
-      m_PN4_PHX*cP_pFluid_PHX*der(T_PN4_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_PN3_PHX - T_PN4_PHX) - hApn_PHX*(T_PN3_PHX - T_TN2_PHX) + P_decay.Q*m_PN4_PHX;
-      m_TN1_PHX*cP_Tube_PHX*der(T_TN1_PHX) = 2*hApn_PHX*(T_PN1_PHX - T_TN1_PHX) - 2*hAsn_PHX*(T_TN1_PHX - T_SN3_PHX);
-      m_TN2_PHX*cP_Tube_PHX*der(T_TN2_PHX) = 2*hApn_PHX*(T_PN3_PHX - T_TN2_PHX) - 2*hAsn_PHX*(T_TN2_PHX - T_SN1_PHX);
-      m_SN1_PHX*cP_sFluid_PHX*der(T_SN1_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_in_sFluid_PHX.T - T_SN1_PHX) + hAsn_PHX*(T_TN2_PHX - T_SN1_PHX);
-      m_SN2_PHX*cP_sFluid_PHX*der(T_SN2_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_SN1_PHX - T_SN2_PHX) + hAsn_PHX*(T_TN2_PHX - T_SN1_PHX);
-      m_SN3_PHX*cP_sFluid_PHX*der(T_SN3_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_SN2_PHX - T_SN3_PHX) + hAsn_PHX*(T_TN1_PHX - T_SN3_PHX);
-      m_SN4_PHX*cP_sFluid_PHX*der(T_SN4_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_SN3_PHX - T_SN4_PHX) + hAsn_PHX*(T_TN1_PHX - T_SN3_PHX);
-      T_out_sFluid_PHX.T = delay(T_SN4_PHX, varTauPHXtoSHX, 5000); // Delay for transport time
+      m_PN1_PHX*cP_pFluid_PHX*der(T_PN1_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_in_pFluid_PHX.T - T_PN1_PHX) - hApn_PHX*((T_PN1_PHX + T_PN2_PHX)/2 - T_TN1_PHX) + P_decay.Q*m_PN1_PHX;
+      m_PN2_PHX*cP_pFluid_PHX*der(T_PN2_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_PN1_PHX - T_PN2_PHX) - hApn_PHX*((T_PN1_PHX + T_PN2_PHX)/2 - T_TN1_PHX) + P_decay.Q*m_PN2_PHX;
+      m_PN3_PHX*cP_pFluid_PHX*der(T_PN3_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_PN2_PHX - T_PN3_PHX) - hApn_PHX*((T_PN3_PHX + T_PN4_PHX)/2 - T_TN2_PHX) + P_decay.Q*m_PN3_PHX;
+      m_PN4_PHX*cP_pFluid_PHX*der(T_PN4_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_PN3_PHX - T_PN4_PHX) - hApn_PHX*((T_PN3_PHX + T_PN4_PHX)/2 - T_TN2_PHX) + P_decay.Q*m_PN4_PHX;
+      m_TN1_PHX*cP_Tube_PHX*der(T_TN1_PHX) = 2*hApn_PHX*((T_PN1_PHX + T_PN2_PHX)/2 - T_TN1_PHX) - 2*hAsn_PHX*(T_TN1_PHX - (T_SN3_PHX + T_SN4_PHX)/2);
+      m_TN2_PHX*cP_Tube_PHX*der(T_TN2_PHX) = 2*hApn_PHX*((T_PN3_PHX + T_PN4_PHX)/2 - T_TN2_PHX) - 2*hAsn_PHX*(T_TN2_PHX - (T_SN1_PHX + T_SN2_PHX)/2);
+      m_SN1_PHX*cP_sFluid_PHX*der(T_SN1_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_in_sFluid_PHX.T - T_SN1_PHX) + hAsn_PHX*(T_TN2_PHX - (T_SN1_PHX + T_SN2_PHX)/2);
+      m_SN2_PHX*cP_sFluid_PHX*der(T_SN2_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_SN1_PHX - T_SN2_PHX) + hAsn_PHX*(T_TN2_PHX - (T_SN1_PHX + T_SN2_PHX)/2);
+      m_SN3_PHX*cP_sFluid_PHX*der(T_SN3_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_SN2_PHX - T_SN3_PHX) + hAsn_PHX*(T_TN1_PHX - (T_SN3_PHX + T_SN4_PHX)/2);
+      m_SN4_PHX*cP_sFluid_PHX*der(T_SN4_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_SN3_PHX - T_SN4_PHX) + hAsn_PHX*(T_TN1_PHX - (T_SN3_PHX + T_SN4_PHX)/2);
+      T_out_sFluid_PHX.T = delay(T_SN4_PHX, varTauPHXtoSHX, 5000);
+    // Delay for transport time
       m_pipe*cP_pFluid_PHX*der(Pipe_Temp) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_PN4_PHX - Pipe_Temp) + P_decay.Q*m_pipe;
       T_out_pFluid_PHX.T = delay(Pipe_Temp, varTauPHXtoCore, 5000);
       P_primaryLoop = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_in_pFluid_PHX.T - T_PN4_PHX) + P_decay.Q*4*m_PN1_PHX;
@@ -628,16 +629,18 @@ package MCFR_HyS_BOP
       hApn_SHX = hApnNom_SHX;
       hAsn_SHX = hAsnNom_SHX;
       T_in_sFluid_SHX = (T_in_sFluid_OTSG.T + T_in_sFluid_HyS.T)/2;
-      m_PN1_SHX*cP_pFluid_SHX*der(T_PN1_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_in_pFluid_SHX.T - T_PN1_SHX) - hApn_SHX*(T_PN1_SHX - T_TN1_SHX);
-      m_PN2_SHX*cP_pFluid_SHX*der(T_PN2_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_PN1_SHX - T_PN2_SHX) - hApn_SHX*(T_PN1_SHX - T_TN1_SHX);
-      m_PN3_SHX*cP_pFluid_SHX*der(T_PN3_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_PN2_SHX - T_PN3_SHX) - hApn_SHX*(T_PN3_SHX - T_TN2_SHX);
-      m_PN4_SHX*cP_pFluid_SHX*der(T_PN4_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_PN3_SHX - T_PN4_SHX) - hApn_SHX*(T_PN3_SHX - T_TN2_SHX);
-      m_TN1_SHX*cP_Tube_SHX*der(T_TN1_SHX) = 2*hApn_SHX*(T_PN1_SHX - T_TN1_SHX) - 2*hAsn_SHX*(T_TN1_SHX - T_SN3_SHX);
-      m_TN2_SHX*cP_Tube_SHX*der(T_TN2_SHX) = 2*hApn_SHX*(T_PN3_SHX - T_TN2_SHX) - 2*hAsn_SHX*(T_TN2_SHX - T_SN1_SHX);
-      m_SN1_SHX*cP_sFluid_SHX*der(T_SN1_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_in_sFluid_SHX - T_SN1_SHX) + hAsn_SHX*(T_TN2_SHX - T_SN1_SHX);
-      m_SN2_SHX*cP_sFluid_SHX*der(T_SN2_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_SN1_SHX - T_SN2_SHX) + hAsn_SHX*(T_TN2_SHX - T_SN1_SHX);
-      m_SN3_SHX*cP_sFluid_SHX*der(T_SN3_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_SN2_SHX - T_SN3_SHX) + hAsn_SHX*(T_TN1_SHX - T_SN3_SHX);
-      m_SN4_SHX*cP_sFluid_SHX*der(T_SN4_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_SN3_SHX - T_SN4_SHX) + hAsn_SHX*(T_TN1_SHX - T_SN3_SHX);
+      m_PN1_SHX*cP_pFluid_SHX*der(T_PN1_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_in_pFluid_SHX.T - T_PN1_SHX) - hApn_SHX*((T_PN1_SHX + T_PN2_SHX)/2 - T_TN1_SHX);
+      m_PN2_SHX*cP_pFluid_SHX*der(T_PN2_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_PN1_SHX - T_PN2_SHX) - hApn_SHX*((T_PN1_SHX + T_PN2_SHX)/2 - T_TN1_SHX);
+      m_PN3_SHX*cP_pFluid_SHX*der(T_PN3_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_PN2_SHX - T_PN3_SHX) - hApn_SHX*((T_PN3_SHX + T_PN4_SHX)/2 - T_TN2_SHX);
+      m_PN4_SHX*cP_pFluid_SHX*der(T_PN4_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_PN3_SHX - T_PN4_SHX) - hApn_SHX*((T_PN3_SHX + T_PN4_SHX)/2 - T_TN2_SHX);
+      m_TN1_SHX*cP_Tube_SHX*der(T_TN1_SHX) = 2*hApn_SHX*((T_PN1_SHX + T_PN2_SHX)/2 - T_TN1_SHX) - 2*hAsn_SHX*(T_TN1_SHX - (T_SN3_SHX + T_SN4_SHX)/2);
+      m_TN2_SHX*cP_Tube_SHX*der(T_TN2_SHX) = 2*hApn_SHX*((T_PN3_SHX + T_PN4_SHX)/2 - T_TN2_SHX) - 2*hAsn_SHX*(T_TN2_SHX - (T_SN1_SHX + T_SN2_SHX)/2);
+      m_SN1_SHX*cP_sFluid_SHX*der(T_SN1_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_in_sFluid_SHX - T_SN1_SHX) + hAsn_SHX*(T_TN2_SHX - (T_SN1_SHX + T_SN2_SHX)/2);
+      m_SN2_SHX*cP_sFluid_SHX*der(T_SN2_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_SN1_SHX - T_SN2_SHX) + hAsn_SHX*(T_TN2_SHX - (T_SN1_SHX + T_SN2_SHX)/2);
+      m_SN3_SHX*cP_sFluid_SHX*der(T_SN3_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_SN2_SHX - T_SN3_SHX) + hAsn_SHX*(T_TN1_SHX - (T_SN3_SHX + T_SN4_SHX)/2);
+      m_SN4_SHX*cP_sFluid_SHX*der(T_SN4_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_SN3_SHX - T_SN4_SHX) + hAsn_SHX*(T_TN1_SHX - (T_SN3_SHX + T_SN4_SHX)/2);
+    
+    
       T_out_pFluid_SHX.T = delay(T_PN4_SHX, varTauSHXtoPHX, 5000);
       T_out_sFluid_SHX.T = delay(T_SN4_SHX, varTauSHXtoOTSG, 5000);
       P_SecondaryLoop = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_in_pFluid_SHX.T - T_PN4_SHX);
@@ -653,14 +656,8 @@ package MCFR_HyS_BOP
       // Parameter declaration
       parameter MCFR_HyS_BOP.Units.Density rho_hitec = 1680; // From http://www.coal2nuclear.com/MSR%20-%20HITEC%20Heat%20Transfer%20Salt.pdf
       parameter MCFR_HyS_BOP.Units.Density rho_tube = 8425.712;
-      parameter MCFR_HyS_BOP.Units.Density rho_SC = 778.8648; // Density of subcooled fluid in neighbor node to saturated boiling
-      parameter MCFR_HyS_BOP.Units.Density rho_sh = 45.05219; // Density of the superheated steam
       parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_hitec = 0.00154912; // Hitec salt specific heat [MJ/(kg*C)]
       parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_Tube_OTSG = 456.056e-6; // OTSG Tubing specific heat [MJ/(kg*C)]
-      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_SH1 = 0.002573333673413; // Specific heat approximation for the steam outlet
-      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_SH2 = 0.003687517297276; // Specific heat approximation for the steam between boiling and outlet
-      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_fdw = 0.004393935709417; // Specific heat approximation of subcooled fluid at OTSG inlet
-      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_SC = 0.005121564867136; // Specific heat of subcooled fluid in neighbor node to saturated boiling
       parameter MCFR_HyS_BOP.Units.MassFlowRate m_dot_hitecNom;// = 12910.56;//3379; // Hitec salt nominal flow rate
       parameter MCFR_HyS_BOP.Units.MassFlowRate m_dot_fdwNom = 1.925004320027648e+02;             // Feedwater nominal flow rate
       parameter MCFR_HyS_BOP.Units.Convection h_pw = 9101.343578935E-6; // OTSG primary side to tubes heat transfer coefficient [MJ/(s*C)]
@@ -731,6 +728,15 @@ package MCFR_HyS_BOP
       MCFR_HyS_BOP.Units.Length L_sh;
       MCFR_HyS_BOP.Units.Mass M_sh;
       MCFR_HyS_BOP.Units.ReactorPower P_OTSG_Primary;
+      
+      Water.ThermodynamicState fdw, SC2, SH2, SH1;
+      MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_fdw;
+      MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_SC2;
+      MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_SH2;
+      MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_SH1;
+      MCFR_HyS_BOP.Units.Density rho_SC2;
+      MCFR_HyS_BOP.Units.Density rho_SH1;
+      
       // Connections to other modules
       input MCFR_HyS_BOP.Connectors.Temp_In T_in_hitec_OTSG annotation(
         Placement(visible = true, transformation(origin = {-176, 30}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-176, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -769,8 +775,21 @@ package MCFR_HyS_BOP
       L_b = L_b_initial;
       L_sh = L_sh_initial;
       P_stm.P = P_setpoint;
-      M_sh = A_flow * rho_sh * L_sh_initial;
+      rho_SH1 = Water.density_pT(P_stm.P*1e6, T_SH1.T + 273.15);
+      M_sh = A_flow * rho_SH1 * L_sh_initial;
     equation
+      fdw = Water.setState_pT(P_stm.P*1e6, T_fdw.T + 273.15);
+      SC2 = Water.setState_pT(P_stm.P*1e6, T_SC2 + 273.15);
+      SH2 = Water.setState_pT(P_stm.P*1e6, T_SH2 + 273.15);
+      SH1 = Water.setState_pT(P_stm.P*1e6, T_SH1.T + 273.15);
+      
+      cP_fdw = Water.specificHeatCapacityCp(fdw)*1e-6;
+      cP_SC2 = Water.specificHeatCapacityCp(SC2)*1e-6;
+      cP_SH2 = Water.specificHeatCapacityCp(SH2)*1e-6;
+      cP_SH1 = Water.specificHeatCapacityCp(SH1)*1e-6;
+      rho_SC2 = Water.density_pT(P_stm.P*1e6, T_SC2 + 273.15);
+      rho_SH1 = Water.density_pT(P_stm.P*1e6, T_SH1.T + 273.15);
+      
       m_dot_hitec = m_dot_hitecNom*tertiaryFF.FF;
       varTauOTSGtoSHX = tauOTSGtoSHX/tertiaryFF.FF;
 // Primary Side Nodes
@@ -794,7 +813,7 @@ package MCFR_HyS_BOP
     der(T_SH2)*(M_sh*0.5*cP_SH2) = (h_wsh*(N_tubes*pi*D_outer*L_sh*0.5)*(T_TN2 - T_SH2) + (m_dot_B*cP_SH2*(T_sat - T_SH2)) + (A_flow*L_sh*0.5 - dHs_dPs)*der(P_stm.P));
 // Superheated steam node #2 temperature eqn
       T_sat = X_5 + K_5*P_stm.P; // Saturated boiling temp eqn
-        der(T_SC2) = ((h_wsc*(N_tubes*pi*D_outer*L_sc*0.5)*(T_TN6-T_SC2) + (cP_fdw*m_dot_fdw.mdot*T_fdw.T) - cP_SC*((m_dot_fdw.mdot+m_dot_SC)*0.5*T_SC2) + A_flow*L_sc*0.5*der(P_stm.P)) * (2/(A_flow * rho_SC *cP_SC)) - T_SC2*der(L_sc))*(1/(L_sc)); // Subcooled fluid node temperature eqn
+        der(T_SC2) = ((h_wsc*(N_tubes*pi*D_outer*L_sc*0.5)*(T_TN6-T_SC2) + (cP_fdw*m_dot_fdw.mdot*T_fdw.T) - cP_SC2*((m_dot_fdw.mdot+m_dot_SC)*0.5*T_SC2) + A_flow*L_sc*0.5*der(P_stm.P)) * (2/(A_flow * rho_SC2 *cP_SC2)) - T_SC2*der(L_sc))*(1/(L_sc)); // Subcooled fluid node temperature eqn
 // Secondary side pressure:
       der(P_stm.P)*A_flow*L_sh = ((Z_ss*R_ugc)*(der(M_sh)*(T_SH1.T + T_SH2) + M_sh*(der(T_SH1.T) + der(T_SH2)))/(2*MM_stm)) - (P_stm.P*A_flow*der(L_sh)); // Secondary side pressure. T_sh1 is OTSG outlet. Assumption: P_subcooled = P_saturatedboiling = P_superheated
 //der(P_stm.P)*A_flow*L_sh = ((Z_ss*R_ugc)*(der(M_sh)*(T_SH2) + M_sh*(der(T_SH2)))/(MM_stm)) - (P_stm.P*A_flow*der(L_sh)); //Alternative method
@@ -803,12 +822,12 @@ package MCFR_HyS_BOP
 //=======
 // Density, length, and mass flow rates:
       rho_b = 25.884875705 + 12.835*P_stm.P; // Two-phase boiling density eqn. See Singh_2020 (https://www.sciencedirect.com/science/article/pii/S0029549319304881)
-      der(L_sc) = (1/(A_flow * 0.5 * rho_SC * cP_SC * (T_SC2 - T_sat))) * (h_wsc * N_tubes * pi * D_outer * L_sc * 0.5 * (T_TN5 - T_sat) + cP_SC * (m_dot_fdw.mdot * T_SC2 - (m_dot_fdw.mdot + m_dot_SC) * 0.5 * T_sat) + A_flow * L_sc * 0.5 * (K_sc * cP_SC * (T_SC2 - 2 * T_sat) - 1) * der(P_stm.P) - (A_flow * rho_SC * cP_SC * K_1 * L_sc * 0.5 * der(P_stm.P))); // Subcooled domain length eqn
+      der(L_sc) = (1/(A_flow * 0.5 * rho_SC2 * cP_SC2 * (T_SC2 - T_sat))) * (h_wsc * N_tubes * pi * D_outer * L_sc * 0.5 * (T_TN5 - T_sat) + cP_SC2 * (m_dot_fdw.mdot * T_SC2 - (m_dot_fdw.mdot + m_dot_SC) * 0.5 * T_sat) + A_flow * L_sc * 0.5 * (K_sc * cP_SC2 * (T_SC2 - 2 * T_sat) - 1) * der(P_stm.P) - (A_flow * rho_SC2 * cP_SC2 * K_1 * L_sc * 0.5 * der(P_stm.P))); // Subcooled domain length eqn
       der(L_b)*A_flow*rho_b = m_dot_SC - m_dot_B - (A_flow*L_b*K_b*der(P_stm.P)); // Boiling domain length eqn
       L_sh = L_OTSG - L_b - L_sc; // Total OTSG length eqn
 //  der(L_sh) = -der(L_b) - der(L_sc); // Superheated domain length eqn
       m_dot_SH.mdot = m_dot_fdw.mdot * P_stm.P / P_setpoint; // Flow rate out of superheated domain (and OTSG)
-      m_dot_SC = m_dot_fdw.mdot - (rho_SC*A_flow*der(L_sc)) - (A_flow*L_sc*K_sc*der(P_stm.P)); // Flow rate out of subcooled domain
+      m_dot_SC = m_dot_fdw.mdot - (rho_SC2*A_flow*der(L_sc)) - (A_flow*L_sc*K_sc*der(P_stm.P)); // Flow rate out of subcooled domain
       m_dot_B = (h_wb*(N_tubes*pi*D_outer*L_b)*(T_TN3*0.5 + T_TN4*0.5 - T_sat))/(X_4 + K_4*P_stm.P); // Flow rate out of boiling domain
 //  m_dot_SC = 1.925004320027648e+02;
 //  m_dot_B = 1.925004320027648e+02;
