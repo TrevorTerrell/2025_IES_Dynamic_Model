@@ -775,8 +775,7 @@ package MCFR_HyS_BOP
       L_b = L_b_initial;
       L_sh = L_sh_initial;
       P_stm.P = P_setpoint;
-      rho_SH1 = Water.density_pT(P_stm.P*1e6, T_SH1.T + 273.15);
-      M_sh = A_flow * rho_SH1 * L_sh_initial;
+      M_sh = A_flow * Water.density_pT(P_stm.P*1e6, T_SH1.T + 273.15) * L_sh_initial;
     equation
       fdw = Water.setState_pT(P_stm.P*1e6, T_fdw.T + 273.15);
       SC2 = Water.setState_pT(P_stm.P*1e6, T_SC2 + 273.15);
@@ -1041,7 +1040,7 @@ package MCFR_HyS_BOP
 //FEEDWATER HEATER EQNS:
 //   m_dot_fdw.mdot = m_dot_fdw_nom;//388.963;//(m_dot_HPT_bleed + m_dot_LPT_bleed + m_dot_liq + m_dot_vRH + m_dot_con);
        m_dot_fdw2 = (m_dot_HPT_bleed + m_dot_LPT_bleed + m_dot_liq + m_dot_vRH + m_dot_con);
-       m_dot_fdw.mdot = m_dot_fdw_nom + delay(sinmag*m_dot_fdw_nom*sin(omega*time),sinstart);//(if (time < rampstart) then 0 else if (time < rampstart + 500) then -(m_dot_fdw_nom*(1-ramp_min))*(time - rampstart)/500 else if (time < rampstart + 1500) then -(m_dot_fdw_nom*(1-ramp_min)) else if (time < rampstart + 2000) then -(m_dot_fdw_nom*(1-ramp_min))*(rampstart + 2000 - time)/500 else 0);
+       m_dot_fdw.mdot = (m_dot_fdw_nom + delay(sinmag*m_dot_fdw_nom*sin(omega*time),sinstart)) * (if (time < rampstart) then (1) else if (time < rampstart + 500) then (1 - (1-ramp_min) * (time - rampstart)/500) else if (time < rampstart + 1500) then (ramp_min) else if (time < rampstart + 2000) then (1 - (1-ramp_min) * (2000 + rampstart - time)/500) else (1));
        H_setpoint = Water.specificEnthalpy_pT(P_HP.P*1e6, T_setpoint + 273.15)/1e6;
        K_LPB_check = (m_dot_fdw.mdot/(H_LPT_bleed*m_dot_LPT_in))*(H_setpoint - ((H_HPT_bleed*m_dot_HPT_bleed/m_dot_fdw.mdot) + (H_f_MS*m_dot_liq/m_dot_fdw.mdot) + (H_vRH*m_dot_vRH/m_dot_fdw.mdot) + (H_con_out*m_dot_con/m_dot_fdw.mdot)));
     if K_LPB_check > 0 then
@@ -1254,8 +1253,8 @@ package MCFR_HyS_BOP
       delta_T_cond = T_vap - T_elec;
 // ============
 // Mass Balance
-      Mdot_H2O_Eout = Mdot_H2O_nom + delay(sinmag*Mdot_H2O_nom*sin(omega*time),sinstart) + (if (time < rampstart) then 0 else if (time < rampstart + 500) then -(Mdot_H2O_nom*(1-ramp_min))*(time - rampstart)/500 else if (time < rampstart + 1500) then -(Mdot_H2O_nom*(1-ramp_min)) else if (time < rampstart + 2000) then -(Mdot_H2O_nom*(1-ramp_min))*(rampstart + 2000 - time)/500 else 0);
-      Mdot_SA_in = Mdot_SA_nom * ((1 - 0.01)*exp(-0.092*delay(time, sulfouttime)) + 0.01);
+      Mdot_H2O_Eout = (Mdot_H2O_nom + delay(sinmag*Mdot_H2O_nom*sin(omega*time),sinstart))* (if (time < rampstart) then (1) else if (time < rampstart + 500) then (1 - (1-ramp_min) * (time - rampstart)/500) else if (time < rampstart + 1500) then (ramp_min) else if (time < rampstart + 2000) then (1 - (1-ramp_min) * (2000 + rampstart - time)/500) else (1));
+      Mdot_SA_in = (Mdot_SA_nom * ((1 - 0.01)*exp(-0.092*delay(time, sulfouttime)) + 0.01)) * (if (time < rampstart) then (1) else if (time < rampstart + 500) then (1 - (1-ramp_min) * (time - rampstart)/500) else if (time < rampstart + 1500) then (ramp_min) else if (time < rampstart + 2000) then (1 - (1-ramp_min) * (2000 + rampstart - time)/500) else (1));
 // ~~~
       mdot_H = mdot_H_nom*FF_HyS_Hot.FF;//Hot salt flow rate
       mdot_S = Mdot_SA_in*MM_SA + Mdot_H2O_Eout*MM_H2O;
