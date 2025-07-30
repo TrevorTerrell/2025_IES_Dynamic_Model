@@ -4,7 +4,7 @@ package MCFR_HyS_BOP
     //
     // Load parameters for Nuclear and HeatTransport packages
     // NOTE: These are the values to change for most transients. To turn a feature 'off', set the time for that feature (ex: tripPrimaryPump) to be much higher than the total simulation time. To turn it 'on', set the time to the desired value (usually 2000 or 5000 to allow settling after initialization).
-    MCFR_HyS_BOP.HeatTransport.Core Core(P = 1160, TotalFuelMass = 638300, hAnom = 18, mdot_fuelNom = 45000) annotation(
+    MCFR_HyS_BOP.HeatTransport.Core Core(P = 1200, TotalFuelMass = 638300, hAnom = 18, mdot_fuelNom = 45000) annotation(
       Placement(visible = true, transformation(origin = {-261, -89}, extent = {{-555, -555}, {555, 555}}, rotation = 0)));
     MCFR_HyS_BOP.HeatTransport.PrimaryHeatExchanger PHX(m_dot_pFluidNom_PHX = 45000, m_dot_sFluidNom_PHX = 27272.73, hApnNom_PHX = 20, hAsnNom_PHX = 20) annotation(
       Placement(visible = true, transformation(origin = {1237, 389}, extent = {{-427, -427}, {427, 427}}, rotation = 0)));
@@ -15,13 +15,13 @@ package MCFR_HyS_BOP
     MCFR_HyS_BOP.HeatTransport.HyS HyS(mdot_H_nom = 6455.28, pressure_nom = 100, Mdot_SA_nom = 3453.3, Mdot_H2O_nom = 345.33, omega = 0, sinmag = 0.01, sinstart = 88888888, rampstart = 5000000, ramp_min = 0.2, sulfouttime = 88888888, prelieffail = 88888888) annotation(Placement(visible = true, transformation(origin = {2355, -608}, extent = {{-296, -296}, {296, 296}}, rotation = 0)));
     MCFR_HyS_BOP.Nuclear.mPKE mPKE(Lam = 8.77488E-06, lam = {1.24909E-02, 3.15594E-02, 1.10482E-01, 3.22830E-01, 1.34074, 9.03297}, beta = {2.12256E-04, 1.12099E-03, 1.11237E-03, 3.39814E-03, 1.19113E-03, 3.72466E-04}) annotation(
       Placement(visible = true, transformation(origin = {-1323, 315}, extent = {{-409, -409}, {409, 409}}, rotation = 0)));
-    MCFR_HyS_BOP.Nuclear.DecayHeat decayheat(P = 1160, TotalFuelMass = 638300) annotation(
+    MCFR_HyS_BOP.Nuclear.DecayHeat decayheat(P = 1200, TotalFuelMass = 638300) annotation(
       Placement(visible = true, transformation(origin = {-1181, -471}, extent = {{-463, -463}, {463, 463}}, rotation = 0)));
     MCFR_HyS_BOP.Nuclear.Poisons Poisons(lam_bubble = 0.005) annotation(
       Placement(visible = true, transformation(origin = {-1265, -1015}, extent = {{-555, -555}, {555, 555}}, rotation = 0)));
     MCFR_HyS_BOP.Nuclear.ReactivityFeedback ReactivityFeedback(a_F = -4.4376e-05, a_R = 0.1164e-05, step_mag = -185*1e-5, omega = 0.1, sin_mag = 1*1e-5, ramp_rate = 11e-5, ramp_mag = 600e-5, stepInsertionTime = 500000000, sinInsertionTime = 88888888, rampInsertionTime = 500000000) annotation(
       Placement(visible = true, transformation(origin = {-519, -1063}, extent = {{545, -545}, {-545, 545}}, rotation = 0)));
-    MCFR_HyS_BOP.Pumps.PrimaryLoopPump PLP(freeConvectionFF = 0.125, primaryPumpK = 0.092, tripPrimaryPump = 50000000) annotation(
+    MCFR_HyS_BOP.Pumps.PrimaryLoopPump PLP(freeConvectionFF = 0.125, primaryPumpK = 0.092, tripPrimaryPump = 500000000) annotation(
       Placement(visible = true, transformation(origin = {364, 566}, extent = {{-262, -262}, {262, 262}}, rotation = 0)));
     MCFR_HyS_BOP.Pumps.SecondaryLoopPump SLP(freeConvectionFF = 0.05, secondaryPumpK = 0.092, tripSecondaryPump = 2000000000) annotation(
       Placement(visible = true, transformation(origin = {366, -96}, extent = {{-232, -232}, {232, 232}}, rotation = 0)));
@@ -107,7 +107,7 @@ package MCFR_HyS_BOP
       parameter MCFR_HyS_BOP.Units.PrecursorDecayConstant lam[6];
       parameter MCFR_HyS_BOP.Units.DelayedNeutronFrac beta[6];
       parameter MCFR_HyS_BOP.Units.ResidentTime tauCoreNom = 7.028; // Avg travel time within core
-      parameter MCFR_HyS_BOP.Units.ResidentTime tauLoopNom = 7.028;                   // Avg travel time from core outlet to inlet
+      parameter MCFR_HyS_BOP.Units.ResidentTime tauLoopNom = 7.028; // Avg travel time from core outlet to inlet
       //Variable declaration
       MCFR_HyS_BOP.Units.ResidentTime varTauCore;
       MCFR_HyS_BOP.Units.ResidentTime varTauLoop;
@@ -223,7 +223,7 @@ package MCFR_HyS_BOP
       parameter MCFR_HyS_BOP.Units.MacroAbsorptionCrossSection Sig_f = 0.00129788; // Fission cross section of fuel
       parameter MCFR_HyS_BOP.Units.MacroAbsorptionCrossSection Sig_a = 0.00302062; // Absorption cross section of fuel
       parameter MCFR_HyS_BOP.Units.NominalNeutronFlux phi_0 = 3.51513E+14; // Flux density in core
-      parameter MCFR_HyS_BOP.Units.OffgasRemovalRate lam_bubble;                   // Removal rate of fission gases via bubble removal. See Dunkle_2023 "Effect of xenon removal rate on load following in high power thermal spectrum Molten-Salt Reactors (MSRs)" for more info.
+      parameter MCFR_HyS_BOP.Units.OffgasRemovalRate lam_bubble; // Removal rate of fission gases via bubble removal. See Dunkle_2023 "Effect of xenon removal rate on load following in high power thermal spectrum Molten-Salt Reactors (MSRs)" for more info.
       //Variable declarations
       MCFR_HyS_BOP.Units.IsotopicConc I135_conc;
       MCFR_HyS_BOP.Units.IsotopicConc Xe135_conc;
@@ -420,11 +420,11 @@ package MCFR_HyS_BOP
       // Secondary Side node 4 mass
       parameter MCFR_HyS_BOP.Units.Mass m_pipe = 31915;
       // Mass of fluid in pipe between PHX to Core. Necessary due to decay heat present even in transport
-      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_pFluid_PHX = 0.00066065;                   // From Terrapower documents
+      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_pFluid_PHX = 0.00066065; // From Terrapower documents
       // Fuel salt specific heat [MJ/(kg*C)]
-      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_Tube_PHX = 0.00057779;                   // specific heat capacity of tubes (MJ/(kg-C)) ORNL-TM-0728 p.20
+      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_Tube_PHX = 0.00057779; // specific heat capacity of tubes (MJ/(kg-C)) ORNL-TM-0728 p.20
       // PHX Tubing specific heat [MJ/(kg*C)]
-      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_sFluid_PHX = 0.0011;                   // Secondary salt. See Dunkle_2025 "Dynamic Modeling of a Fast Spectrum Molten Salt Reactor Integrated Energy System" Table 1
+      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_sFluid_PHX = 0.0011; // Secondary salt. See Dunkle_2025 "Dynamic Modeling of a Fast Spectrum Molten Salt Reactor Integrated Energy System" Table 1
       // Coolant salt specific heat [MJ/(kg*C)]
       parameter MCFR_HyS_BOP.Units.MassFlowRate m_dot_pFluidNom_PHX;
       // Fuel salt nominal flow rate
@@ -434,9 +434,9 @@ package MCFR_HyS_BOP
       // PHX primary side heat transfer coefficient [MJ/(s*C)]
       parameter MCFR_HyS_BOP.Units.Convection hAsnNom_PHX;
       // PHX secondary side heat transfer coefficient [MJ/(s*C)]
-      parameter MCFR_HyS_BOP.Units.ResidentTime tauPHXtoCore = 1;                        //0.6887;
+      parameter MCFR_HyS_BOP.Units.ResidentTime tauPHXtoCore = 1;
       // Avg travel time from PHX to pipe
-      parameter MCFR_HyS_BOP.Units.ResidentTime tauPHXtoSHX = 10;                              //2.5;
+      parameter MCFR_HyS_BOP.Units.ResidentTime tauPHXtoSHX = 10;
       // Avg travel time from PHX to SHX
       //parameter MCFR_HyS_BOP.Units.ResidentTime tauPipeToCore = 0.6887;
       parameter MCFR_HyS_BOP.Units.Temperature T_PN1_PHX_initial = 708.6;
@@ -506,16 +506,18 @@ package MCFR_HyS_BOP
 // These next two are optional and not currently used. They attempt to include some complexity of htc changing due to flow rate turbulence
 //hApn_PHX = hApnNom_PHX*(0.8215*primaryFF.FF^6 - 4.108*primaryFF.FF^5 + 7.848*primaryFF.FF^4 - 7.165*primaryFF.FF^3 + 3.004*primaryFF.FF^2 + 0.5903*primaryFF.FF + 0.008537);
 //hAsn_PHX = hAsnNom_PHX*(0.8215*secondaryFF.FF^6 - 4.108*secondaryFF.FF^5 + 7.848*secondaryFF.FF^4 - 7.165*secondaryFF.FF^3 + 3.004*secondaryFF.FF^2 + 0.5903*secondaryFF.FF + 0.008537);
-      m_PN1_PHX*cP_pFluid_PHX*der(T_PN1_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_in_pFluid_PHX.T - T_PN1_PHX) - hApn_PHX*((T_PN1_PHX + T_PN2_PHX)/2 - T_TN1_PHX) + P_decay.Q*m_PN1_PHX;
-      m_PN2_PHX*cP_pFluid_PHX*der(T_PN2_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_PN1_PHX - T_PN2_PHX) - hApn_PHX*((T_PN1_PHX + T_PN2_PHX)/2 - T_TN1_PHX) + P_decay.Q*m_PN2_PHX;
-      m_PN3_PHX*cP_pFluid_PHX*der(T_PN3_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_PN2_PHX - T_PN3_PHX) - hApn_PHX*((T_PN3_PHX + T_PN4_PHX)/2 - T_TN2_PHX) + P_decay.Q*m_PN3_PHX;
-      m_PN4_PHX*cP_pFluid_PHX*der(T_PN4_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_PN3_PHX - T_PN4_PHX) - hApn_PHX*((T_PN3_PHX + T_PN4_PHX)/2 - T_TN2_PHX) + P_decay.Q*m_PN4_PHX;
-      m_TN1_PHX*cP_Tube_PHX*der(T_TN1_PHX) = 2*hApn_PHX*((T_PN1_PHX + T_PN2_PHX)/2 - T_TN1_PHX) - 2*hAsn_PHX*(T_TN1_PHX - (T_SN3_PHX + T_SN4_PHX)/2);
-      m_TN2_PHX*cP_Tube_PHX*der(T_TN2_PHX) = 2*hApn_PHX*((T_PN3_PHX + T_PN4_PHX)/2 - T_TN2_PHX) - 2*hAsn_PHX*(T_TN2_PHX - (T_SN1_PHX + T_SN2_PHX)/2);
-      m_SN1_PHX*cP_sFluid_PHX*der(T_SN1_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_in_sFluid_PHX.T - T_SN1_PHX) + hAsn_PHX*(T_TN2_PHX - (T_SN1_PHX + T_SN2_PHX)/2);
-      m_SN2_PHX*cP_sFluid_PHX*der(T_SN2_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_SN1_PHX - T_SN2_PHX) + hAsn_PHX*(T_TN2_PHX - (T_SN1_PHX + T_SN2_PHX)/2);
-      m_SN3_PHX*cP_sFluid_PHX*der(T_SN3_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_SN2_PHX - T_SN3_PHX) + hAsn_PHX*(T_TN1_PHX - (T_SN3_PHX + T_SN4_PHX)/2);
-      m_SN4_PHX*cP_sFluid_PHX*der(T_SN4_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_SN3_PHX - T_SN4_PHX) + hAsn_PHX*(T_TN1_PHX - (T_SN3_PHX + T_SN4_PHX)/2);
+      m_PN1_PHX*cP_pFluid_PHX*der(T_PN1_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_in_pFluid_PHX.T - T_PN1_PHX) - hApn_PHX*(T_PN1_PHX - T_TN1_PHX) + P_decay.Q*m_PN1_PHX;
+      m_PN2_PHX*cP_pFluid_PHX*der(T_PN2_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_PN1_PHX - T_PN2_PHX) - hApn_PHX*(T_PN1_PHX - T_TN1_PHX) + P_decay.Q*m_PN2_PHX;
+      m_PN3_PHX*cP_pFluid_PHX*der(T_PN3_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_PN2_PHX - T_PN3_PHX) - hApn_PHX*(T_PN3_PHX - T_TN2_PHX) + P_decay.Q*m_PN3_PHX;
+      m_PN4_PHX*cP_pFluid_PHX*der(T_PN4_PHX) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_PN3_PHX - T_PN4_PHX) - hApn_PHX*(T_PN3_PHX - T_TN2_PHX) + P_decay.Q*m_PN4_PHX;
+      
+      m_TN1_PHX*cP_Tube_PHX*der(T_TN1_PHX) = 2*hApn_PHX*(T_PN1_PHX - T_TN1_PHX) - 2*hAsn_PHX*(T_TN1_PHX - T_SN3_PHX);
+      m_TN2_PHX*cP_Tube_PHX*der(T_TN2_PHX) = 2*hApn_PHX*(T_PN3_PHX - T_TN2_PHX) - 2*hAsn_PHX*(T_TN2_PHX - T_SN1_PHX);
+      
+      m_SN1_PHX*cP_sFluid_PHX*der(T_SN1_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_in_sFluid_PHX.T - T_SN1_PHX) + hAsn_PHX*(T_TN2_PHX - T_SN1_PHX);
+      m_SN2_PHX*cP_sFluid_PHX*der(T_SN2_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_SN1_PHX - T_SN2_PHX) + hAsn_PHX*(T_TN2_PHX - T_SN1_PHX);
+      m_SN3_PHX*cP_sFluid_PHX*der(T_SN3_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_SN2_PHX - T_SN3_PHX) + hAsn_PHX*(T_TN1_PHX - T_SN3_PHX);
+      m_SN4_PHX*cP_sFluid_PHX*der(T_SN4_PHX) = m_dot_sFluid_PHX*cP_sFluid_PHX*(T_SN3_PHX - T_SN4_PHX) + hAsn_PHX*(T_TN1_PHX - T_SN3_PHX);
       
       T_out_sFluid_PHX.T = delay(T_SN4_PHX, varTauPHXtoSHX, 5000); // Delay for transport time
       m_pipe*cP_pFluid_PHX*der(Pipe_Temp) = m_dot_pFluid_PHX*cP_pFluid_PHX*(T_PN4_PHX - Pipe_Temp) + P_decay.Q*m_pipe;
@@ -541,7 +543,7 @@ package MCFR_HyS_BOP
       // SHX Tubing node 1 mass
       parameter MCFR_HyS_BOP.Units.Mass m_TN2_SHX = 4268;
       // SHX Tubing node 2 mass
-      parameter MCFR_HyS_BOP.Units.Mass m_SN1_SHX = 20460;                        //20460;
+      parameter MCFR_HyS_BOP.Units.Mass m_SN1_SHX = 20460;
       // Cold Side (Hitec salt from OTSG) node 1 mass
       parameter MCFR_HyS_BOP.Units.Mass m_SN2_SHX = 20460;
       // Cold Side (Hitec salt from OTSG) node 2 mass
@@ -549,11 +551,11 @@ package MCFR_HyS_BOP
       // Cold Side (Hitec salt from OTSG) node 3 mass
       parameter MCFR_HyS_BOP.Units.Mass m_SN4_SHX = 20460;
       // Cold Side (Hitec salt from OTSG) node 4 mass
-      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_pFluid_SHX = 0.0011;                   // See IES paper Table 1 for details
+      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_pFluid_SHX = 0.0011; // See IES paper Table 1 for details
       // Fuel salt specific heat [MJ/(kg*C)]
       parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_Tube_SHX = 0.00057779;
       // PHX Tubing specific heat [MJ/(kg*C)]
-      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_sFluid_SHX = 0.00154912;                   // Hitec salt specific heat capacity
+      parameter MCFR_HyS_BOP.Units.SpecificHeatCapacity cP_sFluid_SHX = 0.00154912; // Hitec salt specific heat capacity
       // Coolant salt specific heat [MJ/(kg*C)]
       parameter MCFR_HyS_BOP.Units.MassFlowRate m_dot_pFluidNom_SHX;
       // Fuel salt nominal flow rate
@@ -563,9 +565,9 @@ package MCFR_HyS_BOP
       // PHX primary side heat transfer coefficient [MJ/(s*C)]
       parameter MCFR_HyS_BOP.Units.Convection hAsnNom_SHX;
       // PHX secondary side heat transfer coefficient [MJ/(s*C)]
-      parameter MCFR_HyS_BOP.Units.ResidentTime tauSHXtoPHX = 10;                        //2.5
+      parameter MCFR_HyS_BOP.Units.ResidentTime tauSHXtoPHX = 10;
       // Avg travel time from SHX to PHX
-      parameter MCFR_HyS_BOP.Units.ResidentTime tauSHXtoOTSG = 10;                        //2.5
+      parameter MCFR_HyS_BOP.Units.ResidentTime tauSHXtoOTSG = 10;
       // Avg travel time from SHX to OTSG
       parameter MCFR_HyS_BOP.Units.Temperature T_PN1_SHX_initial = 679.6;
       parameter MCFR_HyS_BOP.Units.Temperature T_PN2_SHX_initial = 670.4;
@@ -636,19 +638,19 @@ package MCFR_HyS_BOP
       hAsn_SHX = hAsnNom_SHX;
       T_in_sFluid_SHX = (T_in_sFluid_OTSG.T + T_in_sFluid_HyS.T)/2;
       
-      m_PN1_SHX*cP_pFluid_SHX*der(T_PN1_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_in_pFluid_SHX.T - T_PN1_SHX) - hApn_SHX*((T_PN1_SHX + T_PN2_SHX)/2 - T_TN1_SHX);
-      m_PN2_SHX*cP_pFluid_SHX*der(T_PN2_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_PN1_SHX - T_PN2_SHX) - hApn_SHX*((T_PN1_SHX + T_PN2_SHX)/2 - T_TN1_SHX);
-      m_PN3_SHX*cP_pFluid_SHX*der(T_PN3_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_PN2_SHX - T_PN3_SHX) - hApn_SHX*((T_PN3_SHX + T_PN4_SHX)/2 - T_TN2_SHX);
-      m_PN4_SHX*cP_pFluid_SHX*der(T_PN4_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_PN3_SHX - T_PN4_SHX) - hApn_SHX*((T_PN3_SHX + T_PN4_SHX)/2 - T_TN2_SHX);
-      m_TN1_SHX*cP_Tube_SHX*der(T_TN1_SHX) = 2*hApn_SHX*((T_PN1_SHX + T_PN2_SHX)/2 - T_TN1_SHX) - 2*hAsn_SHX*(T_TN1_SHX - (T_SN3_SHX + T_SN4_SHX)/2);
-      m_TN2_SHX*cP_Tube_SHX*der(T_TN2_SHX) = 2*hApn_SHX*((T_PN3_SHX + T_PN4_SHX)/2 - T_TN2_SHX) - 2*hAsn_SHX*(T_TN2_SHX - (T_SN1_SHX + T_SN2_SHX)/2);
-//T_TN1_SHX = (T_PN1_SHX + T_PN2_SHX + T_SN3_SHX + T_SN4_SHX)/4;
-//T_TN2_SHX = (T_SN1_SHX + T_SN2_SHX + T_PN3_SHX + T_PN4_SHX)/4;
-      m_SN1_SHX*cP_sFluid_SHX*der(T_SN1_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_in_sFluid_SHX - T_SN1_SHX) + hAsn_SHX*(T_TN2_SHX - (T_SN1_SHX + T_SN2_SHX)/2);
-      m_SN2_SHX*cP_sFluid_SHX*der(T_SN2_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_SN1_SHX - T_SN2_SHX) + hAsn_SHX*(T_TN2_SHX - (T_SN1_SHX + T_SN2_SHX)/2);
-      m_SN3_SHX*cP_sFluid_SHX*der(T_SN3_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_SN2_SHX - T_SN3_SHX) + hAsn_SHX*(T_TN1_SHX - (T_SN3_SHX + T_SN4_SHX)/2);
-      m_SN4_SHX*cP_sFluid_SHX*der(T_SN4_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_SN3_SHX - T_SN4_SHX) + hAsn_SHX*(T_TN1_SHX - (T_SN3_SHX + T_SN4_SHX)/2);
+      m_PN1_SHX*cP_pFluid_SHX*der(T_PN1_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_in_pFluid_SHX.T - T_PN1_SHX) - hApn_SHX*(T_PN1_SHX - T_TN1_SHX);
+      m_PN2_SHX*cP_pFluid_SHX*der(T_PN2_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_PN1_SHX - T_PN2_SHX) - hApn_SHX*(T_PN1_SHX - T_TN1_SHX);
+      m_PN3_SHX*cP_pFluid_SHX*der(T_PN3_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_PN2_SHX - T_PN3_SHX) - hApn_SHX*(T_PN3_SHX - T_TN2_SHX);
+      m_PN4_SHX*cP_pFluid_SHX*der(T_PN4_SHX) = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_PN3_SHX - T_PN4_SHX) - hApn_SHX*(T_PN3_SHX - T_TN2_SHX);
       
+      m_TN1_SHX*cP_Tube_SHX*der(T_TN1_SHX) = 2*hApn_SHX*(T_PN1_SHX - T_TN1_SHX) - 2*hAsn_SHX*(T_TN1_SHX - T_SN3_SHX);
+      m_TN2_SHX*cP_Tube_SHX*der(T_TN2_SHX) = 2*hApn_SHX*(T_PN3_SHX - T_TN2_SHX) - 2*hAsn_SHX*(T_TN2_SHX - T_SN1_SHX);
+      
+      m_SN1_SHX*cP_sFluid_SHX*der(T_SN1_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_in_sFluid_SHX - T_SN1_SHX) + hAsn_SHX*(T_TN2_SHX - T_SN1_SHX);
+      m_SN2_SHX*cP_sFluid_SHX*der(T_SN2_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_SN1_SHX - T_SN2_SHX) + hAsn_SHX*(T_TN2_SHX - T_SN1_SHX);
+      m_SN3_SHX*cP_sFluid_SHX*der(T_SN3_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_SN2_SHX - T_SN3_SHX) + hAsn_SHX*(T_TN1_SHX - T_SN3_SHX);
+      m_SN4_SHX*cP_sFluid_SHX*der(T_SN4_SHX) = m_dot_sFluid_SHX*cP_sFluid_SHX*(T_SN3_SHX - T_SN4_SHX) + hAsn_SHX*(T_TN1_SHX - T_SN3_SHX); 
+           
       T_out_pFluid_SHX.T = delay(T_PN4_SHX, varTauSHXtoPHX, 5000);
       T_out_sFluid_SHX.T = delay(T_SN4_SHX, varTauSHXtoOTSG, 5000);
       P_SecondaryLoop = m_dot_pFluid_SHX*cP_pFluid_SHX*(T_in_pFluid_SHX.T - T_PN4_SHX);
@@ -715,7 +717,7 @@ package MCFR_HyS_BOP
       parameter MCFR_HyS_BOP.Units.CompressibilityFactor Z_ss = 0.76634; // Compressibility factor at 570K and 60 atm
       parameter MCFR_HyS_BOP.Units.UniversalGasConstant R_ugc = 8.3114462e-6; // Universal gas constant [MJ/(mol*C)]
       parameter MCFR_HyS_BOP.Units.MolarMass MM_stm = 0.018; // Molar mass of steam
-      parameter MCFR_HyS_BOP.Units.Pressure P_setpoint = 12.5;                   // Nominal secondary side pressure [MPa]
+      parameter MCFR_HyS_BOP.Units.Pressure P_setpoint = 12.5; // Nominal secondary side pressure [MPa]
       // Variable declaration
       MCFR_HyS_BOP.Units.ResidentTime varTauOTSGtoSHX;
       MCFR_HyS_BOP.Units.MassFlowRate m_dot_hitec;
@@ -1033,7 +1035,7 @@ package MCFR_HyS_BOP
 //FEEDWATER HEATER EQNS:
 //   m_dot_fdw.mdot = m_dot_fdw_nom;//388.963;//(m_dot_HPT_bleed + m_dot_LPT_bleed + m_dot_liq + m_dot_vRH + m_dot_con);
        m_dot_fdw2 = (m_dot_HPT_bleed + m_dot_LPT_bleed + m_dot_liq + m_dot_vRH + m_dot_con);
-       m_dot_fdw.mdot = m_dot_fdw_nom + delay(sinmag*m_dot_fdw_nom*sin(omega*time),sinstart) + (if (time < rampstart) then 0 else if (time < rampstart + 500) then -(m_dot_fdw_nom*(1-ramp_min))*(time - rampstart)/500 else if (time < rampstart + 1500) then -(m_dot_fdw_nom*(1-ramp_min)) else if (time < rampstart + 2000) then -(m_dot_fdw_nom*(1-ramp_min))*(rampstart + 2000 - time)/500 else 0);
+       m_dot_fdw.mdot = m_dot_fdw_nom * (1 + delay(sinmag*sin(omega*time),sinstart)) * (1 + (if (time < rampstart) then 0 else if (time < rampstart + 500) then -(1-ramp_min)*(time - rampstart)/500 else if (time < rampstart + 1500) then -(1-ramp_min) else if (time < rampstart + 2000) then -(1-ramp_min)*(rampstart + 2000 - time)/500 else 0));
        H_setpoint = Water.specificEnthalpy_pT(P_HP.P*1e6, T_setpoint + 273.15)/1e6;
        K_LPB_check = (m_dot_fdw.mdot/(H_LPT_bleed*m_dot_LPT_in))*(H_setpoint - ((H_HPT_bleed*m_dot_HPT_bleed/m_dot_fdw.mdot) + (H_f_MS*m_dot_liq/m_dot_fdw.mdot) + (H_vRH*m_dot_vRH/m_dot_fdw.mdot) + (H_con_out*m_dot_con/m_dot_fdw.mdot)));
     if K_LPB_check > 0 then
@@ -1099,7 +1101,7 @@ package MCFR_HyS_BOP
       parameter MCFR_HyS_BOP.Units.Volt E0_cell = 0.6;// From Gorensek
       parameter MCFR_HyS_BOP.Units.WeightPercent WtP_SA_nom = 0.9;
       parameter MCFR_HyS_BOP.Units.MolFlowRate Mdot_H2O_nom;//Nominal excess water flow rate
-      parameter MCFR_HyS_BOP.Units.MolFlowRate Mdot_SA_nom;                      //Nominal net sulfur flow rate
+      parameter MCFR_HyS_BOP.Units.MolFlowRate Mdot_SA_nom;//Nominal net sulfur flow rate
       // ~~~
       parameter MCFR_HyS_BOP.Units.Time rampstart;
       parameter MCFR_HyS_BOP.Units.Number ramp_min;
@@ -1246,7 +1248,7 @@ package MCFR_HyS_BOP
       delta_T_cond = T_vap - T_elec;
 // ============
 // Mass Balance
-      Mdot_H2O_Eout = Mdot_H2O_nom + delay(sinmag*Mdot_H2O_nom*sin(omega*time),sinstart) + (if (time < rampstart) then 0 else if (time < rampstart + 500) then -(Mdot_H2O_nom*(1-ramp_min))*(time - rampstart)/500 else if (time < rampstart + 1500) then -(Mdot_H2O_nom*(1-ramp_min)) else if (time < rampstart + 2000) then -(Mdot_H2O_nom*(1-ramp_min))*(rampstart + 2000 - time)/500 else 0);
+      Mdot_H2O_Eout = Mdot_H2O_nom * (1 + delay(sinmag*sin(omega*time),sinstart)) * (1 + (if (time < rampstart) then 0 else if (time < rampstart + 500) then -(1-ramp_min)*(time - rampstart)/500 else if (time < rampstart + 1500) then -(1-ramp_min) else if (time < rampstart + 2000) then -(1-ramp_min)*(rampstart + 2000 - time)/500 else 0));
       Mdot_SA_in = Mdot_SA_nom * ((1 - 0.01)*exp(-0.092*delay(time, sulfouttime)) + 0.01) * (1 + (if (time < rampstart) then 0 else if (time < rampstart + 500) then -(1-ramp_min)*(time - rampstart)/500 else if (time < rampstart + 1500) then -(1-ramp_min) else if (time < rampstart + 2000) then -(1-ramp_min)*(rampstart + 2000 - time)/500 else 0));
 // ~~~
       mdot_H = mdot_H_nom*FF_HyS_Hot.FF;//Hot salt flow rate
