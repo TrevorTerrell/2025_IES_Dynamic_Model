@@ -17,6 +17,13 @@ These were used for the frequency response analysis, which required 450 runs wit
 - Explanation: This is the completed IES dynamic model of the MCFR powering a Hybrid Sulfur cycle for 
 hydrogen production and a Regenerative Rankine cycle for electricity production. Requires the OMEdit 
 OpenModelica Connection Editor to run or similar.
+
+"MCFR_IES_heat_diverter.mo"
+- Explanation: This is an updated version of the completed IES model. This differs from the version in
+"MCFR_HyS_BOP.mo" by the addition of steam tables in the Regenerative Rankine cycle’s steam generator
+and by the separation of the tertiary loop into two sub loops. This change allows the heat to go to the
+decomposer in the Hybrid Sulfur cycle and to the steam generator in the Regenerative Rankine cycle to
+be altered independently of one another.
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -26,3 +33,4 @@ OpenModelica Connection Editor to run or similar.
 "Safety and Safeguards for Molten Salt Reactors in Integrated Energy Systems" dissertation by N. Dunkle (2025)
 "A reduced order sulfuric acid decomposition model for a nuclear-powered hybrid sulfur cycle" journal article by CT Callaway (2024)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
+
